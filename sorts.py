@@ -1,4 +1,3 @@
-import random
 from venv import create
 
 def mergesort_bottom(L):
@@ -27,9 +26,3 @@ def merge_bottom(L, start, mid, end):
         right.remove(minimum)
     
     L[start:end] = temp
-
-def create_random_list(n):
-    L = []
-    for _ in range(n):
-        L.append(random.randint(1,n))
-    return L
