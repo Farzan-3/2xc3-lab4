@@ -1,8 +1,8 @@
 def mergesort_bottom(L):
     window = 1
-    high = len(L) - 1
+    high = len(L)
     while window <= high:
-        for i in range(0, high - 1, 2*window):
+        for i in range(0, high, 2*window):
             merge_bottom(L, i, i + window - 1, min(i + 2*window - 1, high))
         window *= 2
     return
