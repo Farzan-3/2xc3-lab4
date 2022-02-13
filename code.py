@@ -1,4 +1,3 @@
-from venv import create
 import sorts
 import random
 import timeit

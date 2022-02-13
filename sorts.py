@@ -1,12 +1,12 @@
-from venv import create
-
 def mergesort_bottom(L):
-    window = 2
-    for _ in range(len(L) - 2):
-        for j in range(0, len(L), window):
-            merge_bottom(L, j, int(j + (window)/2), j + window)
+    window = 1
+    high = len(L) - 1
+    while window <= high:
+        for i in range(0, high - 1, 2*window):
+            merge_bottom(L, i, i + window - 1, min(i + 2*window - 1, high))
         window *= 2
     return
+
 def merge_bottom(L, start, mid, end):
     temp = []
     left = L[start:mid]
