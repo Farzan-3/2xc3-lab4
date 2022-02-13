@@ -1,3 +1,4 @@
+from audioop import lin2adpcm
 import sorts
 import random
 import timeit
@@ -10,36 +11,36 @@ def mergesort(L):
     if len(L) <= 1:
         return 
     mid = len(L)//2 
-    left, right = L[:mid], L[mid:]
+    left, middle = L[:mid], L[mid:]
 
     #Mergesort core
     mergesort(left)
-    mergesort(right)
-    temp = merge(left, right)
+    mergesort(middle)
+    temp = merge(left, middle)
 
     #Copy the sorted list to L
     for i in range(len(temp)):
         L[i] = temp[i]
 
 #Lab4.py function
-def merge(left, right):
+def merge(left, middle):
     L = []
     i = j = 0
 
-    while i < len(left) or j < len(right):
-        #Check it there's still elements to be merged from left and/or right
+    while i < len(left) or j < len(middle):
+        #Check it there's still elements to be merged from left and/or middle
         if i >= len(left):
-            L.append(right[j])
+            L.append(middle[j])
             j += 1
-        elif j >= len(right):
+        elif j >= len(middle):
             L.append(left[i])
             i += 1
         else:
-            if left[i] <= right[j]:
+            if left[i] <= middle[j]:
                 L.append(left[i])
                 i += 1
             else:
-                L.append(right[j])
+                L.append(middle[j])
                 j+=1
     return L
 
@@ -52,59 +53,59 @@ def mergesort_three(L):
             L[0], L[1] = L[1], L[0]
         return 
     mid = len(L)//3
-    left, right, middle = L[:mid], L[mid:mid*2], L[mid*2:]
+    left, middle, right  = L[:mid], L[mid:mid*2], L[mid*2:]
 
     mergesort_three(left)
-    mergesort_three(right)
-    mergesort_three(middle) 
-    temp = merge_three(left, right, middle)
+    mergesort_three(middle)
+    mergesort_three(right ) 
+    temp = merge_three(left, middle, right )
 
     for i in range(len(temp)):
         L[i] = temp[i]
 
 #merge_three
-def merge_three(left, right, middle):
+def merge_three(left, middle, right ):
     L = []
     i = j = k = 0
 
-    while i < len(left) or j < len(right) or k < len(middle):
-        #Check it there's still elements to be merged from left and/or right
+    while i < len(left) or j < len(middle) or k < len(right ):
+        #Check it there's still elements to be merged from left and/or middle
         if i >= len(left):
-            if j >= len(right):
-                L.append(middle[k])
+            if j >= len(middle):
+                L.append(right [k])
                 k +=1
-            elif k >= len(middle) or right[j] <= middle[k]:
-                L.append(right[j])
+            elif k >= len(right ) or middle[j] <= right [k]:
+                L.append(middle[j])
                 j += 1
             else: 
-                L.append(middle[k])
+                L.append(right [k])
                 k +=  1
-        elif j >= len(right):
+        elif j >= len(middle):
             if i >= len(left):
-                L.append(middle[k])
+                L.append(right [k])
                 k += 1
-            elif k >= len(middle) or left[i] <= middle[k]:
+            elif k >= len(right ) or left[i] <= right [k]:
                 L.append(left[i])
                 i += 1
             else: 
-                L.append(middle[k])
+                L.append(right [k])
                 k += 1
-        elif k >= len(middle):
-            if left[i] <= right[j]:
+        elif k >= len(right ):
+            if left[i] <= middle[j]:
                 L.append(left[i])
                 i += 1
             else: 
-                L.append(right[j])
+                L.append(middle[j])
                 j += 1
         else:
-            if left[i] <= right[j] and left[i] <= middle[k]:
+            if left[i] <= middle[j] and left[i] <= right [k]:
                 L.append(left[i])
                 i += 1
-            elif right[j] <= left[i] and right[j] <= middle[k]:
-                L.append(right[j])
+            elif middle[j] <= left[i] and middle[j] <= right [k]:
+                L.append(middle[j])
                 j += 1
             else:
-                L.append(middle[k])
+                L.append(right [k])
                 k+=1
     return L
 
@@ -116,7 +117,7 @@ def create_random_list(n):
     return L
 
 def create_near_sorted_list(n, factor):
-    l= create_random_list(n)
+    l = create_random_list(n)
     l.sort()
     for _ in range(math.ceil(n * factor)):
         index1 = random.randint(0, n - 1)
@@ -149,6 +150,16 @@ def test1(function, name):
         ts.append(end - start)
     plt.plot(ns, ts, '.', label=name)
     ts.clear() 
+
+for i in range(1000):
+    L1 = create_random_list(i)
+    L2 = L1.copy()
+    L3 = L1.copy()
+    mergesort(L1)
+    mergesort_three(L2)
+    sorts.mergesort_bottom(L3)
+    assert(L1 == L2 == L3)
+
 
 test(sorts.mergesort_bottom, "Bottom-Up Mergesort")
 test(mergesort, "lab4 Mergesort")
