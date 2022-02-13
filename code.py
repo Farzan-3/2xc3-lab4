@@ -1,6 +1,7 @@
 import sorts
 import random
 import timeit
+import math
 import matplotlib.pyplot as plt
 
 #Lab4.py function
@@ -81,15 +82,17 @@ def merge_three(left, right, middle):
         elif j >= len(right):
             if i >= len(left):
                 L.append(middle[k])
-            elif k >= len(middle) or left[i] <= right[j]:
+                k += 1
+            elif k >= len(middle) or left[i] <= middle[k]:
                 L.append(left[i])
                 i += 1
             else: 
                 L.append(middle[k])
                 k += 1
         elif k >= len(middle):
-            if left[i] <= left[j]:
+            if left[i] <= right[j]:
                 L.append(left[i])
+                i += 1
             else: 
                 L.append(right[j])
                 j += 1
@@ -103,7 +106,8 @@ def merge_three(left, right, middle):
             else:
                 L.append(middle[k])
                 k+=1
-    return L     
+    return L
+
 
 def create_random_list(n):
     L = []
@@ -111,26 +115,59 @@ def create_random_list(n):
         L.append(random.randint(1,n))
     return L
 
-bottomUpTs = []
-lab4Ts = []
-ns = [i for i in range(100)]
-for i in range(100):
-    L = create_random_list(i)
-    temp = L
-    start1 = timeit.default_timer()
-    sorts.mergesort_bottom(L)
-    end1 = timeit.default_timer()
+def create_near_sorted_list(n, factor):
+    l= create_random_list(n)
+    l.sort()
+    for _ in range(math.ceil(n * factor)):
+        index1 = random.randint(0, n - 1)
+        index2 = random.randint(0, n - 1)
+        l[index1], l[index2] = l[index2], l[index1]
+    return l
 
-    start2 = timeit.default_timer()
-    mergesort(temp)
-    end2 = timeit.default_timer()
+def test(function, name):
+    ns = [i for i in range(1, 1001)]
+    ts = []
 
-    bottomUpTs.append(end1 - start1)
-    lab4Ts.append(end2 - start2)
+    for i in range(1000):
+        L = create_random_list(i)
+        start = timeit.default_timer()
+        function(L)
+        end = timeit.default_timer()
+        ts.append(end - start)
+    plt.plot(ns, ts, '.', label=name)
+    ts.clear() 
 
-plt.plot(ns, bottomUpTs, '.', label="Bottom-Up Mergesort")
-plt.plot(ns, lab4Ts, '.', label="lab4 Mergesort")
+def test1(function, name):
+    ns = [i/1000 for i in range(500)]
+    ts = []
+
+    for i in range(500):
+        L = create_near_sorted_list(1000,i/1000)
+        start = timeit.default_timer()
+        function(L)
+        end = timeit.default_timer()
+        ts.append(end - start)
+    plt.plot(ns, ts, '.', label=name)
+    ts.clear() 
+
+test(sorts.mergesort_bottom, "Bottom-Up Mergesort")
+test(mergesort, "lab4 Mergesort")
 plt.xlabel("size of list (n)")
+plt.ylabel("time (t)")
+plt.title("Performance of Mergesorts")
+plt.legend(loc="upper left")
+plt.show()
+
+test(mergesort_three, "Mergesort three")
+test(mergesort, "lab4 Mergesort")
+plt.xlabel("size of list (n)")
+plt.ylabel("time (t)")
+plt.title("Performance of Mergesorts")
+plt.legend(loc="upper left")
+plt.show()
+
+test1(mergesort_three, "Mergesort three")
+plt.xlabel("factor")
 plt.ylabel("time (t)")
 plt.title("Performance of Mergesorts")
 plt.legend(loc="upper left")
